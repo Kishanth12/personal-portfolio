@@ -18,6 +18,9 @@ export class Profile {
   email: string;
 
   @Prop()
+  profilePic: string;
+
+  @Prop()
   phone: string;
 
   @Prop()
