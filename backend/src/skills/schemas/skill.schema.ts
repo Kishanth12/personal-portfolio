@@ -9,11 +9,6 @@ export enum SkillCategory {
   TOOLS = 'tools',
 }
 
-export enum SkillLevel {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
-}
 
 @Schema({ timestamps: true })
 export class Skill {
@@ -23,8 +18,6 @@ export class Skill {
   @Prop({ required: true, enum: SkillCategory })
   category: SkillCategory;
 
-  @Prop({ required: true, enum: SkillLevel })
-  level: SkillLevel;
 }
 
 export const SkillSchema = SchemaFactory.createForClass(Skill);
