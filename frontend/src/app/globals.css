@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  /* 🎨 Colors */
+  --color-light-hover: #fcff4f;
+  --color-dark-hover: #2a004a;
+  --color-dark-theme: #11001f;
+
+  /* 🖋️ Fonts */
+  --font-outfit: "Outfit", sans-serif;
+  --font-ovo: "Ovo", serif;
+
+  /* 🌑 Shadows */
+  --shadow-black: 4px 4px 0 #000;
+  --shadow-white: 4px 4px 0 #fff;
+
+  --grid-cols-auto: repeat(auto-fit, minmax(200px, 1fr));
+
+}
+/* .dark {
+  --color-dark-theme: #11001f;
+  background-color: var(--color-dark-theme);
+  color: white;
+} */
+.dark-theme {
+  background-color: var(--color-dark-theme);
+  color: white ;
+}
+.light-theme {
+  background-color: white;
+  color: black;
+}
+
+
+/* 🎨 Background helpers */
+.lightHover {
+  background-color: var(--color-light-hover);
+}
+
+.darkHover {
+  background-color: var(--color-dark-hover);
+}
+
+/* 🌑 Shadow helpers */
+.shadow-black {
+  box-shadow: var(--shadow-black);
+}
+
+.shadow-white {
+  box-shadow: var(--shadow-white);
+}
+
+/* 🖋️ Font utilities */
+.font-ovo {
+  font-family: var(--font-ovo);
+}
+
+.font-outfit {
+  font-family: var(--font-outfit);
+}
+.grid-cols-auto {
+  grid-template-columns: var(--grid-cols-auto);
+}
