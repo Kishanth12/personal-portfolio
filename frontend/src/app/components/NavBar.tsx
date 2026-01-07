@@ -1,29 +1,23 @@
+"use client";
+
 import Image from "next/image";
-import { assets } from "./../../assets/assets";
-import React, { useEffect, useState } from "react";
+import { assets } from "@/assets/assets";
+import { useEffect, useState } from "react";
+import { useTheme } from "../context/ThemaeContext";
 
-interface NavBarProps {
-  isDarkMode: boolean;
-  setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
+const NavBar: React.FC = () => {
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [isScroll, setIsScroll] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) setIsScroll(true);
-      else setIsScroll(false);
-    };
+    const handleScroll = () => setIsScroll(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      {/* Background image for light mode */}
       <div className="fixed top-0 right-0 w-11/12 -z-10 -translate-y-[80%] dark:hidden">
         <Image src={assets.header_bg_color} alt="" className="w-full" />
       </div>
@@ -33,7 +27,6 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
           isScroll ? "backdrop-blur-lg shadow-sm" : ""
         } ${isDarkMode ? "bg-[#11001f] text-white" : "bg-white text-black"}`}
       >
-        {/* Logo */}
         <a href="#top">
           <Image
             src={isDarkMode ? assets.logo_dark : assets.logo}
@@ -42,7 +35,6 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
           />
         </a>
 
-        {/* Desktop menu */}
         <ul
           className={`hidden md:flex items-center gap-6 lg:gap-8 rounded-full px-12 py-3 transition-colors duration-300 ${
             isScroll
@@ -71,10 +63,8 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
           </li>
         </ul>
 
-        {/* Right section */}
         <div className="flex items-center gap-6">
-          {/* Dark mode toggle */}
-          <button onClick={() => setIsDarkMode(prev => !prev)}>
+          <button onClick={toggleDarkMode}>
             <Image
               src={isDarkMode ? assets.sun_icon : assets.moon_icon}
               alt=""
@@ -82,7 +72,6 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
             />
           </button>
 
-          {/* Desktop Contact button */}
           <a
             href="#contact"
             className="hidden lg:flex items-center gap-3 px-10 py-2.5 border border-gray-500 rounded-full dark:border-white/50"
@@ -95,7 +84,6 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
             />
           </a>
 
-          {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(true)}
             className="block md:hidden ml-3 cursor-pointer"
@@ -108,15 +96,21 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
           </button>
         </div>
 
-        {/* Mobile menu */}
         <ul
           className={`flex md:hidden flex-col gap-4 py-20 px-10 fixed top-0 bottom-0 w-64 z-50 h-screen
             transition-transform transition-colors duration-500
-            ${isMenuOpen ? "right-0 translate-x-0" : "-right-64 translate-x-full"}
-            ${isDarkMode ? "bg-[#2b034b] text-white" : "bg-rose-50 text-black"}`}
+            ${
+              isMenuOpen
+                ? "right-0 translate-x-0"
+                : "-right-64 translate-x-full"
+            }
+            ${isDarkMode ? "bg-[#2b034b] text-white" : "bg-rose-50 text-black"}
+          `}
         >
-          {/* Close button */}
-          <div className="absolute right-6 top-6" onClick={() => setIsMenuOpen(false)}>
+          <div
+            className="absolute right-6 top-6"
+            onClick={() => setIsMenuOpen(false)}
+          >
             <Image
               src={isDarkMode ? assets.close_white : assets.close_black}
               alt="close"
@@ -124,7 +118,6 @@ const NavBar: React.FC<NavBarProps> = ({ isDarkMode, setIsDarkMode }) => {
             />
           </div>
 
-          {/* Mobile menu items */}
           <li>
             <a href="#top" onClick={() => setIsMenuOpen(false)}>
               Home
