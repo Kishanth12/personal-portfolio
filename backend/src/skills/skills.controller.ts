@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { SkillsService } from './skills.service';
 import { SkillCategory } from './schemas/skill.schema';
 
@@ -14,15 +17,25 @@ import { SkillCategory } from './schemas/skill.schema';
 export class SkillsController {
   constructor(private readonly skillService: SkillsService) {}
 
+  // Create skill with optional image upload
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   create(
-    @Body()
-    createSkillDto: {
-      name: string;
-      category: SkillCategory;
-    },
+    @Body() createSkillDto: { name: string; category: SkillCategory },
+    @UploadedFile() image?: Express.Multer.File,
   ) {
-    return this.skillService.create(createSkillDto);
+    return this.skillService.create(createSkillDto, image);
+  }
+
+  // Update skill with optional image upload
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  update(
+    @Param('id') id: string,
+    @Body() updateSkillDto: Partial<{ name: string; category: SkillCategory }>,
+    @UploadedFile() image?: Express.Multer.File,
+  ) {
+    return this.skillService.update(id, updateSkillDto, image);
   }
 
   @Get()
@@ -33,18 +46,6 @@ export class SkillsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.skillService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body()
-    updateSkillDto: {
-      name?: string;
-      category?: SkillCategory;
-    },
-  ) {
-    return this.skillService.update(id, updateSkillDto);
   }
 
   @Delete(':id')
