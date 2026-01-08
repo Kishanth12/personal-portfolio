@@ -29,9 +29,9 @@ const NavBar: React.FC = () => {
       >
         <a href="#top">
           <Image
-            src={isDarkMode ? assets.logo_dark : assets.logo}
+            src={isDarkMode ? assets.logokishdark : assets.logokish}
             alt="logo"
-            className="w-28 cursor-pointer mr-14"
+            className="w-40 cursor-pointer mr-14"
           />
         </a>
 
@@ -53,7 +53,7 @@ const NavBar: React.FC = () => {
             <a href="#about">About me</a>
           </li>
           <li>
-            <a href="#services">Services</a>
+            <a href="#skills">Skills</a>
           </li>
           <li>
             <a href="#myWork">My Work</a>
