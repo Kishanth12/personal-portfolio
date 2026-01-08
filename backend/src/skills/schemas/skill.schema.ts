@@ -7,8 +7,8 @@ export enum SkillCategory {
   FRONTEND = 'frontend',
   BACKEND = 'backend',
   TOOLS = 'tools',
+  DATABASE='database'
 }
-
 
 @Schema({ timestamps: true })
 export class Skill {
@@ -18,6 +18,8 @@ export class Skill {
   @Prop({ required: true, enum: SkillCategory })
   category: SkillCategory;
 
+  @Prop() // optional now
+  image?: string;
 }
 
 export const SkillSchema = SchemaFactory.createForClass(Skill);
