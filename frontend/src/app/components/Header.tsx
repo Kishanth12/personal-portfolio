@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemaeContext";
+import { assets } from "@/assets/assets";
 
 interface Profile {
   name: string;
@@ -20,25 +21,41 @@ const Header: React.FC<HeaderProps> = ({ profile }) => {
 
   return (
     <div className="w-11/12 max-w-3xl text-center mx-auto h-screen flex flex-col items-center justify-center gap-4">
-      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.8 }}>
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1.2 }} // zoom slightly bigger
+        transition={{ duration: 0.8 }}
+      >
         <Image
-          src={profile.profilePic}
+          src={assets.user_image}
           alt={profile.name}
-          width={128}
-          height={128}
-          className="rounded-full"
+          width={140}
+          height={120}
+          className="rounded-full "
         />
       </motion.div>
 
-      <h3 className={`text-xl md:text-2xl font-ovo ${isDarkMode ? "text-white" : ""}`}>
+      <h3
+        className={`text-xl md:text-2xl font-ovo ${
+          isDarkMode ? "text-white" : ""
+        }`}
+      >
         Hi! I'm {profile.name} 👋
       </h3>
 
-      <h1 className={`text-3xl sm:text-6xl font-ovo ${isDarkMode ? "text-white" : ""}`}>
+      <h1
+        className={`text-2xl sm:text-4xl font-ovo ${
+          isDarkMode ? "text-white" : ""
+        }`}
+      >
         {profile.role}
       </h1>
 
-      <p className={`max-w-2xl font-ovo ${isDarkMode ? "text-white/80" : "text-gray-700"}`}>
+      <p
+        className={`max-w-2xl font-ovo ${
+          isDarkMode ? "text-white/80" : "text-gray-700"
+        }`}
+      >
         {profile.bio}
       </p>
     </div>
