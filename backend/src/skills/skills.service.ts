@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Skill, SkillDocument } from './schemas/skill.schema';
 import * as streamifier from 'streamifier';
-import cloudinary from 'src/config/cloudinary.config';
+import cloudinary from '../config/cloudinary.config';
 
 @Injectable()
 export class SkillsService {
