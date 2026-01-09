@@ -19,7 +19,7 @@ import { ResumeModule } from './resume/resume.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        uri: config.get<string>('MONGO_URI'),
+        uri: config.get<string>('MONGO_URL'),
       }),
     }),
     AuthModule,
