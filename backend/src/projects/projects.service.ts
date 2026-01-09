@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './schemas/project.schema';
 import * as streamifier from 'streamifier';
-import cloudinary from 'src/config/cloudinary.config';
+import cloudinary from '../config/cloudinary.config';
 
 @Injectable()
 export class ProjectsService {
