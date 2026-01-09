@@ -18,10 +18,10 @@ export class Project {
   githubUrl: string;
 
   @Prop()
-  liveUrl: string;
+  liveUrl?: string;
 
-  @Prop({ type: [String], default: [] })
-  images: string[];
+  @Prop({ type: String })
+  image: string;
 
   @Prop({ default: false })
   featured: boolean;

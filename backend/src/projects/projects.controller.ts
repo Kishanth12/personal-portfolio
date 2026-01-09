@@ -1,12 +1,15 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  Patch,
   Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProjectsService } from './projects.service';
 import { Project } from './schemas/project.schema';
 
@@ -14,33 +17,42 @@ import { Project } from './schemas/project.schema';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  // Create project
   @Post()
-  create(@Body() body: Partial<Project>) {
-    return this.projectsService.create(body);
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @Body() createProjectDto: Partial<Project>,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.projectsService.create(createProjectDto, file);
   }
 
-  // Get all projects
   @Get()
-  findAll() {
+  async findAll() {
     return this.projectsService.findAll();
   }
 
-  // Get featured projects
   @Get('featured')
-  findFeatured() {
+  async findFeatured() {
     return this.projectsService.findFeatured();
   }
 
-  // Update project
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() body: Partial<Project>) {
-    return this.projectsService.update(id, body);
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.projectsService.findOne(id);
   }
 
-  // Delete project
+  @Put(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: string,
+    @Body() updateProjectDto: Partial<Project>,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.projectsService.update(id, updateProjectDto, file);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.projectsService.remove(id);
   }
 }
