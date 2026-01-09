@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
 import * as streamifier from 'streamifier';
 import { UpdateProfileDto } from './dto/update-profile-dto';
-import cloudinary from 'src/config/cloudinary.config';
+import cloudinary from '../config/cloudinary.config';
 
 @Injectable()
 export class ProfileService {
