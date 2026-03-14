@@ -74,12 +74,14 @@ const About: React.FC<AboutProps> = ({ profile }) => {
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
-          className={`absolute top-40 right-10 w-96 h-96 rounded-full blur-3xl opacity-10 ${isDarkMode ? "bg-lime-500" : "bg-lime-300"
-            }`}
+          className={`absolute top-40 right-10 w-96 h-96 rounded-full blur-3xl opacity-10 ${
+            isDarkMode ? "bg-lime-500" : "bg-lime-300"
+          }`}
         ></div>
         <div
-          className={`absolute bottom-20 left-10 w-80 h-80 rounded-full blur-3xl opacity-10 ${isDarkMode ? "bg-purple-500" : "bg-purple-300"
-            }`}
+          className={`absolute bottom-20 left-10 w-80 h-80 rounded-full blur-3xl opacity-10 ${
+            isDarkMode ? "bg-purple-500" : "bg-purple-300"
+          }`}
         ></div>
       </div>
 
@@ -92,14 +94,16 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           viewport={{ once: true }}
         >
           <motion.p
-            className={`text-sm uppercase tracking-widest mb-3 font-semibold ${isDarkMode ? "text-lime-400" : "text-lime-600"
-              }`}
+            className={`text-sm uppercase tracking-widest mb-3 font-semibold ${
+              isDarkMode ? "text-lime-400" : "text-lime-600"
+            }`}
           >
             👨‍💻 Get To Know Me
           </motion.p>
           <motion.h2
-            className={`text-5xl md:text-6xl font-bold font-ovo mb-4 ${isDarkMode ? "text-white" : "text-gray-900"
-              }`}
+            className={`text-5xl md:text-6xl font-bold font-ovo mb-4 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
           >
             About{" "}
             <span className="bg-gradient-to-r from-lime-400 to-emerald-500 bg-clip-text text-transparent">
@@ -138,10 +142,11 @@ const About: React.FC<AboutProps> = ({ profile }) => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-              className={`relative rounded-3xl overflow-hidden shadow-2xl border-4 ${isDarkMode
+              className={`relative rounded-3xl overflow-hidden shadow-2xl border-4 ${
+                isDarkMode
                   ? "border-gray-700 shadow-lime-500/20"
                   : "border-gray-200 shadow-xl"
-                }`}
+              }`}
             >
               <Image
                 src={profile.profilePic}
@@ -164,10 +169,11 @@ const About: React.FC<AboutProps> = ({ profile }) => {
               initial={{ scale: 0, rotate: -180 }}
               whileInView={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.5, type: "spring" }}
-              className={`absolute -bottom-4 -right-4 px-6 py-3 rounded-full font-bold shadow-2xl ${isDarkMode
+              className={`absolute -bottom-4 -right-4 px-6 py-3 rounded-full font-bold shadow-2xl ${
+                isDarkMode
                   ? "bg-gradient-to-r from-lime-400 to-emerald-500 text-black"
                   : "bg-gradient-to-r from-gray-900 to-gray-800 text-white"
-                }`}
+              }`}
             >
               Available for Work 🚀
             </motion.div>
@@ -179,14 +185,16 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           {/* Role Badge */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className={`inline-flex items-center gap-2 px-5 py-2 rounded-full backdrop-blur-sm ${isDarkMode
+            className={`inline-flex items-center gap-2 px-5 py-2 rounded-full backdrop-blur-sm ${
+              isDarkMode
                 ? "bg-lime-400/20 border border-lime-400/30"
                 : "bg-lime-50 border border-lime-200"
-              }`}
+            }`}
           >
             <span
-              className={`text-sm font-bold ${isDarkMode ? "text-lime-400" : "text-lime-600"
-                }`}
+              className={`text-sm font-bold ${
+                isDarkMode ? "text-lime-400" : "text-lime-600"
+              }`}
             >
               💼 {profile.role}
             </span>
@@ -195,8 +203,9 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           {/* Bio Text */}
           <motion.div
             variants={itemVariants}
-            className={`space-y-4 text-base md:text-lg leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}
+            className={`space-y-4 text-base md:text-lg leading-relaxed ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}
           >
             <p className="font-ovo">{profile.bio}</p>
           </motion.div>
@@ -241,21 +250,24 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           {/* Current Work Experience */}
           <motion.div
             variants={itemVariants}
-            className={`p-6 rounded-2xl backdrop-blur-sm border ${isDarkMode
+            className={`p-6 rounded-2xl backdrop-blur-sm border ${
+              isDarkMode
                 ? "bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700"
                 : "bg-gradient-to-br from-white to-gray-50 border-gray-200"
-              }`}
+            }`}
           >
             <div className="flex items-start gap-4">
               <div
-                className={`p-3 rounded-xl ${isDarkMode
+                className={`p-3 rounded-xl ${
+                  isDarkMode
                     ? "bg-lime-400/20 border border-lime-400/30"
                     : "bg-lime-50 border border-lime-200"
-                  }`}
+                }`}
               >
                 <svg
-                  className={`w-6 h-6 ${isDarkMode ? "text-lime-400" : "text-lime-600"
-                    }`}
+                  className={`w-6 h-6 ${
+                    isDarkMode ? "text-lime-400" : "text-lime-600"
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -271,29 +283,33 @@ const About: React.FC<AboutProps> = ({ profile }) => {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h4
-                    className={`font-bold text-lg ${isDarkMode ? "text-white" : "text-gray-900"
-                      }`}
+                    className={`font-bold text-lg ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
                   >
                     Backend Developer
                   </h4>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${isDarkMode
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      isDarkMode
                         ? "bg-lime-400/20 text-lime-400"
                         : "bg-lime-100 text-lime-700"
-                      }`}
+                    }`}
                   >
                     Current
                   </span>
                 </div>
                 <p
-                  className={`font-semibold mb-1 ${isDarkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
+                  className={`font-semibold mb-1 ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
                 >
                   Gamage Recruiters Pvt Ltd
                 </p>
                 <p
-                  className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"
-                    }`}
+                  className={`text-sm ${
+                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                  }`}
                 >
                   September 2025- March 2026
                 </p>
@@ -304,8 +320,9 @@ const About: React.FC<AboutProps> = ({ profile }) => {
           {/* Social Links */}
           <motion.div variants={itemVariants}>
             <h3
-              className={`text-lg font-bold mb-4 ${isDarkMode ? "text-white" : "text-gray-900"
-                }`}
+              className={`text-lg font-bold mb-4 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
             >
               Connect with me
             </h3>
@@ -320,10 +337,11 @@ const About: React.FC<AboutProps> = ({ profile }) => {
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.1, y: -5 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`group relative p-4 rounded-2xl backdrop-blur-sm transition-all duration-300 ${isDarkMode
+                      className={`group relative p-4 rounded-2xl backdrop-blur-sm transition-all duration-300 ${
+                        isDarkMode
                           ? "bg-gray-800/50 hover:bg-lime-400/20 border border-gray-700 hover:border-lime-400"
                           : "bg-white hover:bg-lime-50 border border-gray-200 hover:border-lime-400"
-                        } shadow-lg hover:shadow-lime-500/20`}
+                      } shadow-lg hover:shadow-lime-500/20`}
                     >
                       {/* Glow Effect */}
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-lime-400 to-emerald-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
@@ -336,7 +354,7 @@ const About: React.FC<AboutProps> = ({ profile }) => {
                         className="relative z-10 transition-transform duration-300 group-hover:scale-110 rounded-2xl"
                       />
                     </motion.a>
-                  )
+                  ),
               )}
             </div>
           </motion.div>
@@ -348,10 +366,11 @@ const About: React.FC<AboutProps> = ({ profile }) => {
               download="Kishanth_Atputharasa_Resume.pdf"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-base transition-all duration-300 shadow-lg hover:shadow-2xl ${isDarkMode
+              className={`inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-base transition-all duration-300 shadow-lg hover:shadow-2xl ${
+                isDarkMode
                   ? "bg-gray-800 hover:bg-gray-700 text-white border-2 border-gray-700 hover:border-lime-400"
                   : "bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 hover:border-lime-400"
-                }`}
+              }`}
             >
               <svg
                 className="w-5 h-5"
