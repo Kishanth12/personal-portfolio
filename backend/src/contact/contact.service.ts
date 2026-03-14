@@ -36,14 +36,10 @@ export class ContactService implements OnModuleInit {
     // Masked logging for debugging
     const maskedUser = user.replace(/(.{2})(.*)(.{2})@/, '$1***$3@');
     const maskedPass = pass.substring(0, 2) + '*'.repeat(pass.length - 4) + pass.substring(pass.length - 2);
-    console.log(`Nodemailer: Attempting login with User: ${maskedUser}, Pass: ${maskedPass} (Length: ${pass.length})`);
-
-    try {
-      await this.transporter.verify();
-      console.log('Nodemailer: Ready to send emails');
-    } catch (error) {
-      console.error('Nodemailer verification failed:', error.message);
-    }
+    console.log(`Nodemailer: Configuration available for User: ${maskedUser}, Pass: ${maskedPass} (Length: ${pass.length})`);
+    
+    // Note: We avoid this.transporter.verify() here because it's a blocking call 
+    // that can cause timeouts in serverless functions during cold starts.
   }
 
   // Save a new contact message
@@ -51,11 +47,20 @@ export class ContactService implements OnModuleInit {
     const newMessage = new this.contactModel(createContactDto);
     const savedMessage = await newMessage.save();
 
+    const emailUser = this.configService.get<string>('EMAIL_USER');
+    const emailPass = this.configService.get<string>('EMAIL_PASS');
+    const notificationEmail = this.configService.get<string>('NOTIFICATION_EMAIL') || 'kishanthshanth12@gmail.com';
+
+    if (!emailUser || !emailPass) {
+      console.error('Email sending failed: EMAIL_USER or EMAIL_PASS not configured in environment.');
+      return savedMessage;
+    }
+
     // Send email notification
     try {
       await this.transporter.sendMail({
         from: `"${createContactDto.name}" <${createContactDto.email}>`,
-        to: this.configService.get<string>('NOTIFICATION_EMAIL') || 'kishanthshanth12@gmail.com',
+        to: notificationEmail,
         subject: `New Contact Form Submission from ${createContactDto.name}`,
         text: `You have a new message:
         Name: ${createContactDto.name}
@@ -69,9 +74,14 @@ export class ContactService implements OnModuleInit {
           <p>${createContactDto.message}</p>
         `,
       });
-      console.log(`Email notification sent to ${this.configService.get<string>('NOTIFICATION_EMAIL') || 'kishanthshanth12@gmail.com'}`);
+      console.log(`Email notification sent to ${notificationEmail}`);
     } catch (error) {
       console.error('Failed to send email:', error.message);
+      if (error.code === 'EAUTH') {
+        console.error('Authentication Error: Check EMAIL_USER and EMAIL_PASS (App Password).');
+      } else if (error.code === 'ESOCKET') {
+        console.error('Socket Error: Connection to SMTP host failed. Check port/firewall.');
+      }
     }
 
     return savedMessage;
