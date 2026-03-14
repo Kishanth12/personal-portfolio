@@ -34,7 +34,7 @@ export class ContactService implements OnModuleInit {
     private configService: ConfigService,
   ) { }
 
-  // ✅ Move transporter creation here — config is guaranteed ready
+  // ✅ Initialize transporter — non-blocking for serverless bootstrap
   async onModuleInit() {
     const user = this.configService.get<string>('EMAIL_USER');
     const pass = this.configService.get<string>('EMAIL_PASS');
@@ -46,37 +46,43 @@ export class ContactService implements OnModuleInit {
 
     const host = this.configService.get<string>('SMTP_HOST') ?? 'smtp.gmail.com';
     const port = parseInt(this.configService.get<string>('SMTP_PORT') ?? '587', 10);
-    const secure = this.configService.get<string>('SMTP_SECURE') === 'true';
+    // ✅ Port 465 should always use secure: true
+    const secure = this.configService.get<string>('SMTP_SECURE') === 'true' || port === 465;
 
     this.transporter = nodemailer.createTransport({
       host,
       port,
       secure,
       auth: { user, pass },
-      // ✅ Removed pool:true — it conflicts with maxConnections:1 and
-      //    causes stale connection issues in serverless/long-idle environments.
-      //    If you need pooling, set maxConnections >= 3.
+      // ✅ Timeout settings to prevent hanging in serverless
+      connectionTimeout: 10000, 
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
-    try {
-      await this.transporter.verify();
-      this.emailConfigured = true;
-      const maskedUser = user.replace(/(.{2})(.*)(?=@)/, '$1***');
-      this.logger.log(`SMTP ready — Host: ${host}:${port}, User: ${maskedUser}`);
-    } catch (err) {
-      this.logger.error(`SMTP verify failed: ${err.message}`);
-      // Don't throw — let the app start; emails simply won't send
-    }
+    // ✅ Background verification — does not block Vercel bootstrap
+    this.transporter.verify()
+      .then(() => {
+        this.emailConfigured = true;
+        const maskedUser = user.replace(/(.{2})(.*)(?=@)/, '$1***');
+        this.logger.log(`SMTP Ready [${host}:${port}] — User: ${maskedUser}`);
+      })
+      .catch(err => {
+        this.logger.error(`SMTP Verification Failed: ${err.message}`);
+        // Consider checking Gmail security settings or switching to Port 465
+      });
   }
 
   async create(createContactDto: CreateContactDto): Promise<Contact> {
-    // ✅ Save first — don't let email failure block persistence
     const saved = await new this.contactModel(createContactDto).save();
 
-    if (this.emailConfigured) {
-      await this.sendNotification(createContactDto);
+    // ✅ Attempt sending even if background verification hasn't finished yet
+    if (this.transporter) {
+      this.sendNotification(createContactDto).catch(err => {
+        this.logger.error(`Deferred notification failed: ${err.message}`);
+      });
     } else {
-      this.logger.warn('Email skipped — SMTP not configured or failed to verify.');
+      this.logger.warn('Email skipped — Transporter not initialized (check environment variables).');
     }
 
     return saved;
