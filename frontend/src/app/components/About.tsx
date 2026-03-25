@@ -56,7 +56,7 @@ const About: React.FC<AboutProps> = ({ profile }) => {
     },
     {
       name: "Email",
-      url: `mailto:${profile.email}`,
+      url: `https://mail.google.com/mail/?view=cm&fs=1&to=${profile.email}`,
       icon: assets.email,
       size: 50,
     },
