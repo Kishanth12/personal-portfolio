@@ -1,9 +1,9 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Contact, ContactDocument } from './schemas/contact.schema';
-import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import { Resend } from 'resend';
 
 export interface CreateContactDto {
   name: string;
@@ -21,59 +21,32 @@ function escapeHtml(raw: string): string {
 }
 
 @Injectable()
-export class ContactService implements OnModuleInit {
+export class ContactService {
   private readonly logger = new Logger(ContactService.name);
-  private transporter: nodemailer.Transporter;
-  private emailConfigured = false;
+  private resend: Resend;
 
   constructor(
     @InjectModel(Contact.name) private contactModel: Model<ContactDocument>,
     private configService: ConfigService,
-  ) { }
-
-  async onModuleInit() {
-    const user = this.configService.get<string>('EMAIL_USER');
-    const pass = this.configService.get<string>('EMAIL_PASS');
-
-    if (!user || !pass) {
-      this.logger.warn('EMAIL_USER or EMAIL_PASS not set — email notifications disabled.');
-      return;
+  ) {
+    const apiKey = this.configService.get<string>('RESEND_API_KEY');
+    if (!apiKey) {
+      this.logger.warn('RESEND_API_KEY not set — email notifications disabled.');
+    } else {
+      this.resend = new Resend(apiKey);
+      this.logger.log('Resend email client initialized.');
     }
-
-    const host = this.configService.get<string>('SMTP_HOST') ?? 'smtp.gmail.com';
-    const port = parseInt(this.configService.get<string>('SMTP_PORT') ?? '587', 10);
-    const secure = this.configService.get<string>('SMTP_SECURE') === 'true' || port === 465;
-
-    this.transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth: { user, pass },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
-
-    this.transporter.verify()
-      .then(() => {
-        this.emailConfigured = true;
-        const maskedUser = user.replace(/(.{2})(.*)(?=@)/, '$1***');
-        this.logger.log(`SMTP Ready [${host}:${port}] — User: ${maskedUser}`);
-      })
-      .catch(err => {
-        this.logger.error(`SMTP Verification Failed: ${err.message}`);
-      });
   }
 
   async create(createContactDto: CreateContactDto): Promise<Contact> {
     const saved = await new this.contactModel(createContactDto).save();
 
-    if (this.transporter) {
+    if (this.resend) {
       this.sendNotification(createContactDto).catch(err => {
-        this.logger.error(`Deferred notification failed: ${err.message}`);
+        this.logger.error(`Notification failed: ${err.message}`);
       });
     } else {
-      this.logger.warn('Email skipped — Transporter not initialized (check environment variables).');
+      this.logger.warn('Email skipped — RESEND_API_KEY not set.');
     }
 
     return saved;
@@ -84,18 +57,16 @@ export class ContactService implements OnModuleInit {
   }
 
   private async sendNotification(dto: CreateContactDto): Promise<void> {
-    const from = this.configService.get<string>('EMAIL_USER');
-    const to =
-      this.configService.get<string>('NOTIFICATION_EMAIL') ??
-      'kishanthshanth12@gmail.com';
+    const to = this.configService.get<string>('NOTIFICATION_EMAIL') ?? 'kishanthshanth12@gmail.com';
+    const from = this.configService.get<string>('RESEND_FROM_EMAIL') ?? 'Portfolio <onboarding@resend.dev>';
 
     const safeName = escapeHtml(dto.name);
     const safeEmail = escapeHtml(dto.email);
     const safeMessage = escapeHtml(dto.message);
 
     try {
-      await this.transporter.sendMail({
-        from: `"Portfolio Contact Form" <${from}>`,
+      const { error } = await this.resend.emails.send({
+        from,
         to,
         replyTo: dto.email,
         subject: `New Message from ${dto.name}`,
@@ -108,15 +79,14 @@ export class ContactService implements OnModuleInit {
           <p>${safeMessage}</p>
         `,
       });
-      this.logger.log(`Notification sent to ${to}`);
-    } catch (err) {
-      if (err.code === 'EAUTH') {
-        this.logger.error(
-          'SMTP auth failed — if using Gmail, generate an App Password at myaccount.google.com/apppasswords',
-        );
+
+      if (error) {
+        this.logger.error(`Resend error: ${error.message}`);
       } else {
-        this.logger.error(`Failed to send email: ${err.message}`);
+        this.logger.log(`Notification sent to ${to}`);
       }
+    } catch (err) {
+      this.logger.error(`Failed to send email: ${err.message}`);
     }
   }
 }
