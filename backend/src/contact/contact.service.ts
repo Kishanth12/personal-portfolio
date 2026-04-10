@@ -42,7 +42,7 @@ export class ContactService {
     const saved = await new this.contactModel(createContactDto).save();
 
     if (this.resend) {
-      this.sendNotification(createContactDto).catch(err => {
+      await this.sendNotification(createContactDto).catch(err => {
         this.logger.error(`Notification failed: ${err.message}`);
       });
     } else {

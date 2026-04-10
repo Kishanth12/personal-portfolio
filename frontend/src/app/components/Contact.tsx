@@ -1,11 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { assets } from "@/assets/assets";
-import { sendContact } from "@/src/services/contact.service";
+import { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemaeContext";
+import { sendContact } from "@/src/services/contact.service";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Sphere, MeshDistortMaterial, Float, Environment } from "@react-three/drei";
+import * as THREE from "three";
+
+function AnimatedBlob({ isDarkMode }: { isDarkMode: boolean }) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+    }
+  });
+
+  return (
+    <Float speed={2} rotationIntensity={2} floatIntensity={3}>
+      <mesh ref={meshRef} scale={1.5}>
+        <sphereGeometry args={[1, 64, 64]} />
+        <MeshDistortMaterial
+          color={isDarkMode ? "#06b6d4" : "#0ea5e9"}
+          envMapIntensity={isDarkMode ? 1 : 0.8}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          metalness={0.9}
+          roughness={0.1}
+          distort={0.4}
+          speed={2}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+      {/* Inner glowing core */}
+      <mesh scale={1.2}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial color={isDarkMode ? "#a3e635" : "#84cc16"} wireframe />
+      </mesh>
+    </Float>
+  );
+}
 
 const Contact: React.FC = () => {
   const { isDarkMode } = useTheme();
@@ -15,7 +52,7 @@ const Contact: React.FC = () => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setResult("Sending...");
+    setResult("Sending payload to central server...");
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -28,431 +65,120 @@ const Contact: React.FC = () => {
       });
       setResult("success");
       form.reset();
-      setTimeout(() => setResult(""), 3000);
+      setTimeout(() => setResult(""), 4000);
     } catch (err) {
       setResult("error");
-      setTimeout(() => setResult(""), 3000);
+      setTimeout(() => setResult(""), 4000);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      id="contact"
-      className="w-full px-[12%] py-20 scroll-mt-5 relative overflow-hidden"
-    >
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className={`absolute top-40 left-20 w-96 h-96 rounded-full blur-3xl opacity-10 ${
-            isDarkMode ? "bg-lime-500" : "bg-lime-300"
-          }`}
-        ></div>
-        <div
-          className={`absolute bottom-20 right-20 w-80 h-80 rounded-full blur-3xl opacity-10 ${
-            isDarkMode ? "bg-purple-500" : "bg-purple-300"
-          }`}
-        ></div>
-        <div
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-5 ${
-            isDarkMode ? "bg-emerald-500" : "bg-emerald-300"
-          }`}
-        ></div>
+    <div id="contact" className="w-full relative min-h-screen py-40 flex items-center justify-center overflow-hidden bg-transparent z-10">
+
+      {/* 3D WebGL Background restricted to contact section */}
+      <div className="absolute inset-x-0 bottom-0 h-full w-full lg:w-1/2 lg:right-0 lg:left-auto pointer-events-none opacity-50 z-[-1]">
+        <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+          <ambientLight intensity={isDarkMode ? 0.5 : 1} />
+          <directionalLight position={[10, 10, 5]} intensity={2} color="#a3e635" />
+          <directionalLight position={[-10, -10, -5]} intensity={1} color="#06b6d4" />
+          <AnimatedBlob isDarkMode={isDarkMode} />
+
+        </Canvas>
       </div>
 
-      {/* Section Header */}
-      <div className="relative z-10 text-center mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.p
-            className={`text-sm uppercase tracking-widest mb-3 font-semibold ${
-              isDarkMode ? "text-lime-400" : "text-lime-600"
-            }`}
-          >
-            💬 Get In Touch
-          </motion.p>
-          <motion.h2
-            className={`text-5xl md:text-6xl font-bold font-ovo mb-4 ${
-              isDarkMode ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Let's{" "}
-            <span className="bg-gradient-to-r from-lime-400 to-emerald-500 bg-clip-text text-transparent">
-              Connect
-            </span>
-          </motion.h2>
-          <motion.p
-            className={`text-lg max-w-2xl mx-auto ${
-              isDarkMode ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
-            Have a project in mind? Let's discuss how we can work together
-          </motion.p>
-        </motion.div>
-      </div>
+      <div className="w-full max-w-7xl mx-auto px-[5%] md:px-[8%] grid lg:grid-cols-2 gap-16 relative z-10">
 
-      {/* Contact Form Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="max-w-3xl mx-auto relative z-10"
-      >
-        <div
-          className={`relative rounded-3xl shadow-2xl p-8 md:p-12 backdrop-blur-sm ${
-            isDarkMode
-              ? "bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700"
-              : "bg-white/90 border border-gray-100"
-          }`}
-        >
-          {/* Decorative Corner Elements */}
-          <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-lime-400 rounded-tl-3xl opacity-50"></div>
-          <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-emerald-500 rounded-br-3xl opacity-50"></div>
-
-          <motion.form onSubmit={onSubmit} className="space-y-6">
-            {/* Name Input */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <label
-                className={`block text-sm font-semibold mb-2 ${
-                  isDarkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Your Name
-              </label>
-              <div className="relative group">
-                <div
-                  className={`absolute inset-0 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm`}
-                ></div>
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="Kishanth"
-                  required
-                  className={`relative w-full px-5 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:border-lime-400 focus:scale-[1.02] ${
-                    isDarkMode
-                      ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:bg-gray-900"
-                      : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:bg-white"
-                  }`}
-                />
-              </div>
-            </motion.div>
-
-            {/* Email Input */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <label
-                className={`block text-sm font-semibold mb-2 ${
-                  isDarkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Email Address
-              </label>
-              <div className="relative group">
-                <div
-                  className={`absolute inset-0 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm`}
-                ></div>
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="kishanth@example.com"
-                  required
-                  className={`relative w-full px-5 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:border-lime-400 focus:scale-[1.02] ${
-                    isDarkMode
-                      ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:bg-gray-900"
-                      : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:bg-white"
-                  }`}
-                />
-              </div>
-            </motion.div>
-
-            {/* Message Textarea */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <label
-                className={`block text-sm font-semibold mb-2 ${
-                  isDarkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Your Message
-              </label>
-              <div className="relative group">
-                <div
-                  className={`absolute inset-0 rounded-xl bg-gradient-to-r from-lime-400 to-emerald-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm`}
-                ></div>
-                <textarea
-                  name="message"
-                  rows={6}
-                  placeholder="Connect with me...."
-                  required
-                  className={`relative w-full px-5 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:border-lime-400 focus:scale-[1.02] resize-none ${
-                    isDarkMode
-                      ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:bg-gray-900"
-                      : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:bg-white"
-                  }`}
-                />
-              </div>
-            </motion.div>
-
-            {/* Submit Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                whileHover={{ scale: isLoading ? 1 : 1.05 }}
-                whileTap={{ scale: isLoading ? 1 : 0.95 }}
-                className={`relative group w-full md:w-auto px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-2xl overflow-hidden ${
-                  isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
-                } ${
-                  isDarkMode
-                    ? "bg-gradient-to-r from-lime-400 to-emerald-500 text-black"
-                    : "bg-gradient-to-r from-gray-900 to-gray-800 text-white"
-                }`}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-3">
-                  {isLoading ? (
-                    <>
-                      <svg
-                        className="animate-spin w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      Send Message
-                      <svg
-                        className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
-                    </>
-                  )}
-                </span>
-
-                {/* Animated Background */}
-                {!isLoading && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{
-                      x: ["-200%", "200%"],
-                    }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 3,
-                      ease: "linear",
-                    }}
-                  />
-                )}
-              </motion.button>
-
-              {/* Success/Error Messages */}
-              <AnimatePresence mode="wait">
-                {result === "success" && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full shadow-lg"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="font-semibold">
-                      Message sent successfully!
-                    </span>
-                  </motion.div>
-                )}
-
-                {result === "error" && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-400 to-rose-500 text-white rounded-full shadow-lg"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="font-semibold">
-                      Failed to send. Try again!
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </motion.form>
-
-          {/* Contact Info */}
+        {/* Text Section */}
+        <div className="flex flex-col justify-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className={`mt-12 pt-8 border-t ${
-              isDarkMode ? "border-gray-700" : "border-gray-200"
-            }`}
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, type: "spring" }}
           >
-            <div className="flex flex-wrap justify-center gap-8">
-              <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="flex items-center gap-3"
-              >
-                <div
-                  className={`p-3 rounded-full ${
-                    isDarkMode ? "bg-gray-700" : "bg-gray-100"
-                  }`}
-                >
-                  <svg
-                    className={`w-6 h-6 ${
-                      isDarkMode ? "text-lime-400" : "text-lime-600"
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p
-                    className={`text-xs font-semibold ${
-                      isDarkMode ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  >
-                    Email
-                  </p>
-                  <p
-                    className={`font-medium ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    kishanthshanth12@example.com
-                  </p>
-                </div>
-              </motion.div>
+            <p className={`text-sm uppercase tracking-[0.4em] font-black mb-4 ${isDarkMode ? "text-lime-400" : "text-lime-600"}`}>
+              GET IN TOUCH            </p>
+            <h2 className={`text-6xl md:text-8xl font-black font-space mb-6 leading-none tracking-tighter ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+              Let's Connect <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">CONTACT</span>
+            </h2>
+            <p className={`text-lg max-w-md leading-relaxed ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+              Have a project in mind? Let's discuss how we can work together
+            </p>
 
-              <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="flex items-center gap-3"
-              >
-                <div
-                  className={`p-3 rounded-full ${
-                    isDarkMode ? "bg-gray-700" : "bg-gray-100"
-                  }`}
-                >
-                  <svg
-                    className={`w-6 h-6 ${
-                      isDarkMode ? "text-lime-400" : "text-lime-600"
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
+            <div className="mt-12 space-y-6">
+              {[
+                { label: "Direct Comms", value: "kishanthshanth12@gmail.com" },
+                { label: "Coordinates", value: "Batticaloa, Sri Lanka" }
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col group">
+                  <span className={`text-xs uppercase tracking-widest font-black mb-1 ${isDarkMode ? "text-gray-600" : "text-gray-400"}`}>{item.label}</span>
+                  <span className={`text-xl font-bold transition-colors ${isDarkMode ? "text-gray-300 group-hover:text-lime-400" : "text-gray-700 group-hover:text-lime-600"}`}>{item.value}</span>
                 </div>
-                <div>
-                  <p
-                    className={`text-xs font-semibold ${
-                      isDarkMode ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  >
-                    Location
-                  </p>
-                  <p
-                    className={`font-medium ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Batticaloa,SriLanka
-                  </p>
-                </div>
-              </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>
-      </motion.div>
-    </motion.div>
+
+        {/* Form Form Section */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, rotateY: 30 }}
+          whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, type: "spring" }}
+          className="relative perspective-1000"
+        >
+          <div className={`p-8 md:p-12 rounded-3xl backdrop-blur-xl border ${isDarkMode ? "bg-gray-900/40 border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]" : "bg-white/60 border-gray-200 shadow-2xl"}`}>
+            <form onSubmit={onSubmit} className="flex flex-col gap-6 relative z-10">
+              <div className="grid md:grid-cols-2 gap-6">
+                <input
+                  name="name"
+                  type="text"
+                  placeholder="Your [NAME]"
+                  required
+                  className={`w-full bg-transparent border-b-2 py-4 px-2 font-bold focus:outline-none transition-colors ${isDarkMode ? "border-gray-800 text-white focus:border-cyan-400 placeholder:text-gray-700" : "border-gray-200 text-gray-900 focus:border-cyan-600 placeholder:text-gray-400"}`}
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Your [EMAIL]"
+                  required
+                  className={`w-full bg-transparent border-b-2 py-4 px-2 font-bold focus:outline-none transition-colors ${isDarkMode ? "border-gray-800 text-white focus:border-cyan-400 placeholder:text-gray-700" : "border-gray-200 text-gray-900 focus:border-cyan-600 placeholder:text-gray-400"}`}
+                />
+              </div>
+              <textarea
+                name="message"
+                placeholder="LEAVE A MESSAGE [MESSAGE]..."
+                required
+                rows={4}
+                className={`w-full bg-transparent border-b-2 py-4 px-2 font-bold focus:outline-none transition-colors resize-none ${isDarkMode ? "border-gray-800 text-white focus:border-cyan-400 placeholder:text-gray-700" : "border-gray-200 text-gray-900 focus:border-cyan-600 placeholder:text-gray-400"}`}
+              />
+
+              <div className="mt-8 flex items-center justify-between">
+                <div className="h-6">
+                  {result === "success" && <span className="text-lime-400 font-bold tracking-widest text-sm">MESSAGE SENT SUCCESSFUL ✓</span>}
+                  {result === "error" && <span className="text-red-500 font-bold tracking-widest text-sm">MESSAGE SENT FAILED ✗</span>}
+                  {isLoading && <span className="text-cyan-400 font-bold tracking-widest text-sm animate-pulse">{result}</span>}
+                </div>
+
+                <motion.button
+                  type="submit"
+                  disabled={isLoading}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-10 py-4 rounded-xl font-black tracking-widest text-sm overflow-hidden relative group ${isLoading ? 'opacity-50' : ''} ${isDarkMode ? "bg-white text-black" : "bg-gray-900 text-white"}`}
+                >
+                  <span className="relative z-10">SEND MESSAGE</span>
+                  <div className={`absolute inset-0 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ${isDarkMode ? "bg-gradient-to-r from-lime-400 to-cyan-400" : "bg-gradient-to-r from-lime-500 to-emerald-500"}`} />
+                </motion.button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 

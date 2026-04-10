@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { assets } from "@/assets/assets";
 import { useTheme } from "../context/ThemaeContext";
 
 interface FooterProps {
   profile: {
+    name?: string;
     email: string;
     github?: string;
     linkedin?: string;
@@ -17,297 +16,49 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ profile }) => {
   const { isDarkMode } = useTheme();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
   return (
-    <motion.footer
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={containerVariants}
-      className={`relative mt-20 px-[12%] py-16 overflow-hidden ${
-        isDarkMode
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black"
-          : "bg-gradient-to-br from-gray-100 via-gray-50 to-white"
-      }`}
-    >
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 ${
-            isDarkMode ? "bg-lime-500" : "bg-lime-400"
-          }`}
-        ></div>
-        <div
-          className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 ${
-            isDarkMode ? "bg-emerald-500" : "bg-emerald-400"
-          }`}
-        ></div>
+    <footer className={`relative w-full py-12 px-[5%] md:px-[8%] z-10 border-t ${isDarkMode ? "border-gray-900 bg-black/50" : "border-gray-200 bg-white/50"} backdrop-blur-xl`}>
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        
+        {/* Brand / Name */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex items-center gap-3"
+        >
+          <div className={`w-3 h-3 rounded-full ${isDarkMode ? "bg-cyan-400 shadow-[0_0_10px_#06b6d4]" : "bg-cyan-500"}`} />
+          <span className={`font-space font-black tracking-widest uppercase text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+            {profile.name || "Kishanth"}
+          </span>
+        </motion.div>
+
+        {/* Status Text & Links */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-6 items-center flex-wrap justify-center"
+        >
+          <span className={`text-xs uppercase tracking-widest font-bold ${isDarkMode ? "text-gray-600" : "text-gray-400"}`}>
+            System Online
+          </span>
+          {profile.github && (
+            <a href={profile.github} target="_blank" rel="noopener noreferrer" className={`text-sm font-bold hover:text-cyan-400 transition-colors ${isDarkMode ? "text-gray-400" : "text-gray-800"}`}>GITHUB</a>
+          )}
+          {profile.linkedin && (
+            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className={`text-sm font-bold hover:text-cyan-400 transition-colors ${isDarkMode ? "text-gray-400" : "text-gray-800"}`}>LINKEDIN</a>
+          )}
+          <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); }} className={`text-sm font-bold hover:text-lime-400 transition-colors ${isDarkMode ? "text-gray-400" : "text-gray-800"}`}>
+            SCROLL TO TOP ↑
+          </a>
+        </motion.div>
       </div>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Top Section - Brand */}
-        <motion.div variants={itemVariants} className="text-center mb-12">
-          <motion.h2
-            whileHover={{ scale: 1.05 }}
-            className={`text-4xl md:text-5xl font-bold font-ovo mb-4 inline-block cursor-pointer`}
-          >
-            <span className="bg-gradient-to-r from-lime-400 via-emerald-500 to-lime-400 bg-clip-text text-transparent">
-              Kishanth
-            </span>
-          </motion.h2>
-          <p
-            className={`text-base md:text-lg ${
-              isDarkMode ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
-            Full Stack Developer & Creative Problem Solver
-          </p>
-        </motion.div>
-
-        {/* Middle Section - Contact & Social */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Contact Info */}
-          <motion.div
-            variants={itemVariants}
-            className={`p-6 rounded-2xl backdrop-blur-sm ${
-              isDarkMode
-                ? "bg-gray-800/50 border border-gray-700"
-                : "bg-white/80 border border-gray-200"
-            }`}
-          >
-            <h3
-              className={`text-xl font-bold mb-4 ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Get in Touch
-            </h3>
-            <motion.a
-              href={`mailto:${profile.email}`}
-              whileHover={{ x: 5 }}
-              className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                isDarkMode
-                  ? "hover:bg-lime-400/10 text-gray-300 hover:text-lime-400"
-                  : "hover:bg-lime-50 text-gray-700 hover:text-lime-600"
-              }`}
-            >
-              <div
-                className={`p-2 rounded-lg ${
-                  isDarkMode ? "bg-lime-400/20" : "bg-lime-100"
-                }`}
-              >
-                <svg
-                  className={`w-5 h-5 ${
-                    isDarkMode ? "text-lime-400" : "text-lime-600"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <span className="font-medium">{profile.email}</span>
-            </motion.a>
-          </motion.div>
-
-          {/* Social Links */}
-          <motion.div
-            variants={itemVariants}
-            className={`p-6 rounded-2xl backdrop-blur-sm ${
-              isDarkMode
-                ? "bg-gray-800/50 border border-gray-700"
-                : "bg-white/80 border border-gray-200"
-            }`}
-          >
-            <h3
-              className={`text-xl font-bold mb-4 ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Connect With Me
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {profile.github && (
-                <motion.a
-                  href={profile.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-lime-400/20 text-gray-300 hover:text-lime-400 border border-gray-600 hover:border-lime-400"
-                      : "bg-gray-100 hover:bg-lime-50 text-gray-700 hover:text-lime-600 border border-gray-200 hover:border-lime-400"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  GitHub
-                </motion.a>
-              )}
-
-              {profile.linkedin && (
-                <motion.a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-lime-400/20 text-gray-300 hover:text-lime-400 border border-gray-600 hover:border-lime-400"
-                      : "bg-gray-100 hover:bg-lime-50 text-gray-700 hover:text-lime-600 border border-gray-200 hover:border-lime-400"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                  LinkedIn
-                </motion.a>
-              )}
-
-              {profile.twitter && (
-                <motion.a
-                  href={profile.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-lime-400/20 text-gray-300 hover:text-lime-400 border border-gray-600 hover:border-lime-400"
-                      : "bg-gray-100 hover:bg-lime-50 text-gray-700 hover:text-lime-600 border border-gray-200 hover:border-lime-400"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                  Twitter
-                </motion.a>
-              )}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Navigation Links */}
-        <motion.div
-          variants={itemVariants}
-          className="flex justify-center gap-8 mb-8"
-        >
-          {[
-            { name: "Home", href: "#top" },
-            { name: "About", href: "#about" },
-            { name: "Skills", href: "#skills" },
-            { name: "Work", href: "#myWork" },
-            { name: "Contact", href: "#contact" },
-          ].map((link) => (
-            <motion.a
-              key={link.name}
-              href={link.href}
-              whileHover={{ y: -3 }}
-              className={`text-sm md:text-base font-medium transition-all duration-300 ${
-                isDarkMode
-                  ? "text-gray-400 hover:text-lime-400"
-                  : "text-gray-600 hover:text-lime-600"
-              }`}
-            >
-              {link.name}
-            </motion.a>
-          ))}
-        </motion.div>
-
-        {/* Divider */}
-        <motion.div
-          variants={itemVariants}
-          className={`h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent mb-8 ${
-            isDarkMode ? "opacity-20" : "opacity-40"
-          }`}
-        ></motion.div>
-
-        {/* Bottom Section */}
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col md:flex-row items-center justify-between gap-4"
-        >
-          <p
-            className={`text-sm ${
-              isDarkMode ? "text-gray-500" : "text-gray-600"
-            }`}
-          >
-            © {new Date().getFullYear()} Kishanth.
-          </p>
-
-          {/* Back to Top */}
-          <motion.button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            whileHover={{ scale: 1.1, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
-              isDarkMode
-                ? "bg-gray-800 hover:bg-lime-400/20 text-gray-300 hover:text-lime-400 border border-gray-700 hover:border-lime-400"
-                : "bg-white hover:bg-lime-50 text-gray-700 hover:text-lime-600 border border-gray-200 hover:border-lime-400"
-            } shadow-lg`}
-          >
-            <span className="text-sm">Back to Top</span>
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 10l7-7m0 0l7 7m-7-7v18"
-              />
-            </svg>
-          </motion.button>
-        </motion.div>
-      </div>
-    </motion.footer>
+      {/* Decorative Grid Line */}
+      <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+    </footer>
   );
 };
 

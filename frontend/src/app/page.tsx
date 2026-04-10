@@ -9,6 +9,7 @@ import { getProjects } from "../services/project.service";
 import { getSkills } from "../services/skill.service";
 import Services from "./components/Services";
 import NavBar from "./components/NavBar";
+import CanvasBackground from "./components/CanvasBackground";
 
 export default async function Page() {
   const profile = await getProfile();
@@ -16,6 +17,7 @@ export default async function Page() {
   const skills = await getSkills();
   return (
     <>
+      <CanvasBackground />
       <NavBar />
       <Header profile={profile} />
       <About profile={profile} />

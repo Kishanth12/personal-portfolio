@@ -14,8 +14,13 @@ async function bootstrap() {
     app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
     app.useGlobalInterceptors(new ResponseInterceptor());
+    const allowedOrigins = [
+      'http://localhost:3000',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean) as string[];
+
     app.enableCors({
-      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+      origin: allowedOrigins,
       credentials: true,
     });
     app.useGlobalPipes(
