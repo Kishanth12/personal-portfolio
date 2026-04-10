@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${outfit.className} ${ovo.className} ${spaceGrotesk.variable} antialiased leading-8 overflow-x-hidden light:light-theme dark:dark-theme`}
+        className={`${outfit.className} ${ovo.className} ${spaceGrotesk.variable} relative antialiased leading-8 overflow-x-hidden light:light-theme dark:dark-theme`}
       >
         <ThemeProvider>{children}</ThemeProvider>
       </body>

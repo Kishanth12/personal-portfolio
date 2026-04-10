@@ -10,6 +10,7 @@ import { getSkills } from "../services/skill.service";
 import Services from "./components/Services";
 import NavBar from "./components/NavBar";
 import CanvasBackground from "./components/CanvasBackground";
+import MusicPlayer from "./components/MusicPlayer";
 
 export default async function Page() {
   const profile = await getProfile();
@@ -26,6 +27,7 @@ export default async function Page() {
       <Services skills={skills} />
       <Contact />
       <Footer profile={profile} />
+      <MusicPlayer />
     </>
   );
 }
