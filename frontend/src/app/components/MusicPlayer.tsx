@@ -209,7 +209,7 @@ export default function MusicPlayer() {
           {isPlaying && !isMuted ? (
             <Equalizer color={accent} />
           ) : (
-            <NoteIcon color={accent} paused={!isPlaying && hasStarted} />
+            <NoteIcon color={accent} paused={!isPlaying} />
           )}
         </motion.button>
       </div>
