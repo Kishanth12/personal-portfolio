@@ -1,4 +1,5 @@
-// app/page.tsx
+export const dynamic = "force-dynamic";
+
 import { getProfile } from "@/src/services/profile.service";
 import About from "./components/About";
 import Header from "./components/Header";
@@ -15,6 +16,7 @@ export default async function Page() {
   const profile = await getProfile();
   const projects = await getProjects();
   const skills = await getSkills();
+
   return (
     <>
       <CanvasBackground />
