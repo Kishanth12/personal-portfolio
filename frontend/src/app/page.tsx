@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
 
 import { getProfile } from "@/src/services/profile.service";
 import About from "./components/About";

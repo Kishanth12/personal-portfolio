@@ -16,6 +16,7 @@ async function bootstrap() {
     app.useGlobalInterceptors(new ResponseInterceptor());
     const allowedOrigins = [
       'http://localhost:3000',
+      'https://personal-portfolio-frontend-xi.vercel.app',
       process.env.FRONTEND_URL,
     ].filter(Boolean) as string[];
 
